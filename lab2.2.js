@@ -2,7 +2,7 @@ let n = 14,
   w = 2500,
   N = 64,
   A,
-  Fi,
+  Fii,
   graphic = [];
 number = w / (n - 1);
 
@@ -26,11 +26,50 @@ let x = new Array(N).fill(0);
 
 for (let i = 0; i < n; i++) {
   A = Math.random();
-  Fi = Math.random();
+  Fii = Math.random();
   for (let j = 0; j < N; j++) {
-    x[j] += A * Math.sin(w_values[i] * j + Fi);
+    x[j] += A * Math.sin(w_values[i] * j + Fii);
   }
 }
+
+// lab 2.1
+
+let F1 = [];
+let FR = [];
+let Fi = [];
+
+function makeFR(arr) {
+  for (let i = 0; i < N; i++) {
+    arr.push(0);
+    for (let j = 0; j < N; j++) {
+      arr[i] += x[j] * Math.cos((-2 * Math.PI * i * j) / N);
+    }
+  }
+  return arr;
+}
+
+function makeFi(arr) {
+  for (let i = 0; i < N; i++) {
+    arr.push(0);
+    for (let j = 0; j < N; j++) {
+      arr[i] += x[j] * Math.sin((-2 * Math.PI * i * j) / N);
+    }
+  }
+  return arr;
+}
+
+function makeF(arr) {
+  for (let i = 0; i < N; i++) {
+    arr[i] = FR[i] + Fi[i];
+  }
+  return arr;
+}
+
+makeFR(FR);
+makeFi(Fi);
+makeF(F1);
+
+// lab 2.2
 
 // таблица коеф w[p][k] от N / 2
 let w_coeff = [];
@@ -88,7 +127,14 @@ for (let i = 0; i < N; i++) {
   }
 }
 
-console.log(F);
+// Доп задание "додайте у проект лабу 2.1 та порахуйте відхилення лаб 2.2 від 2.1"
+let arr = [];
+
+for (let i = 0; i < F.length; i++) {
+  arr.push(F[i].toFixed(5) - F1[i].toFixed(5));
+}
+
+console.group(arr);
 
 let config = {
   type: "line",
@@ -97,7 +143,7 @@ let config = {
     labels: graphic,
     datasets: [
       {
-        label: "Xt",
+        label: "График сигналов",
         borderColor: "black",
         data: x,
         fill: false
@@ -113,9 +159,41 @@ let config1 = {
     labels: graphic,
     datasets: [
       {
-        label: "F",
+        label: "Лаб 2.2",
         borderColor: "black",
         data: F,
+        fill: false
+      }
+    ]
+  }
+};
+
+let config2 = {
+  type: "line",
+
+  data: {
+    labels: graphic,
+    datasets: [
+      {
+        label: "Лаб 2.1",
+        borderColor: "black",
+        data: F1,
+        fill: false
+      }
+    ]
+  }
+};
+
+let config3 = {
+  type: "line",
+
+  data: {
+    labels: graphic,
+    datasets: [
+      {
+        label: "Графік відхилення лаб2.2 від лаб2.1",
+        borderColor: "black",
+        data: arr,
         fill: false
       }
     ]
@@ -128,4 +206,10 @@ window.onload = function() {
 
   var ctx1 = document.getElementById("lab2.2").getContext("2d");
   window.chart = new Chart(ctx1, config1);
+
+  var ctx2 = document.getElementById("lab2.1").getContext("2d");
+  window.chart = new Chart(ctx2, config2);
+
+  var ctx3 = document.getElementById("arr").getContext("2d");
+  window.chart = new Chart(ctx3, config3);
 };
